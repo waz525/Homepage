@@ -1,0 +1,586 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>TestShow</title>
+     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<script type="text/javascript" src="./jquery.js"></script>
+	<!--
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	-->
+
+  </head>
+  
+  <body>
+    <p id="msg"></p><P> 
+	<p id="tmsg"></p><P>    
+	<p>
+		<input id="username" type="text" name="username" value="admin" > 
+		<input id="password" type="text" name="password" value="123456" > 
+	</p>
+	<p>
+		<input id="userlogin" type="button" name="userlogin" value="用户登录" >  
+		<input id="tokencheck" type="button" name="tokencheck" value="token验证" >  
+		<input id="userlogout" type="button" name="userlogout" value="用户退出" >  
+	</p>
+    <p>
+		<input id="createTable" type="button" name="createTable" value="新建表" > 
+		<input id="tablefield" type="button" name="tablefield" value="查询表字段" >
+		<input id="countinfo" type="button" name="countinfo" value="统计数量" >
+		<input id="dropTable" type="button" name="dropTable" value="删除表" >
+	</p>
+    <p>
+		<input id="addinfo" type="button" name="addinfo" value="增加对象" >
+		<input id="queryinfo" type="button" name="queryinfo" value="查询对象" >
+		<input id="modifyinfo" type="button" name="modifyinfo" value="修改对象" >
+		<input id="delinfo" type="button" name="delinfo" value="删除对象" >
+	</p>
+	<p>
+		<input id="createFileTable" type="button" name="createFileTable" value="新建file表" >
+		<input id="dropFileTable" type="button" name="dropFileTable" value="删除file表" >
+		<input id="queryFileTable" type="button" name="queryFileTable" value="查询file表" >
+	</p>
+
+	<p>
+
+	<input id="apitest" type="button" name="apitest" value="Api测试" >
+
+	<p>
+
+  </body>
+  
+  <script type="text/javascript">
+	$(document).ready(function(){
+	
+		$("#msg").text("这里将显示执行结果。。。");
+		$("#tmsg").text("这里将显示执行耗时。。。");
+		
+	
+		var ObjectID = null ;
+		var token = "" ;
+
+			
+		$("#userlogin").click(function(){
+				var date1=new Date();//开始时间
+                $("#msg").empty();
+                $.ajax({
+					"url": "./api/user/login",
+					"method": "POST",
+					"cache": false,
+					"async":false,
+					"data":{
+						"username": $("#username").val(),
+						"password": $("#password").val()
+					}
+                }).success(function (data, status, header) {
+                //success body
+                    $("#msg").text("执行结果: "+JSON.stringify(data));
+					token = data["data"]["login"]["Token"]
+					console.log("token: "+token)
+                }).fail(function (header, status, errorThrown) {
+                //fail body
+                    $("#msg").append(header.responseText) ;
+                })
+
+
+            var date2=new Date();//结束时间
+            var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+            $("#tmsg").text("耗时: "+date3+" ms");
+
+        });
+	
+		$("#tokencheck").click(function(){
+				var date1=new Date();//开始时间
+                $("#msg").empty();
+                $.ajax({
+					"url": "./api/user/chktoken",
+					"method": "POST",
+					"cache": false,
+					"async":false,
+					data: {
+						"token": token
+					},
+                }).success(function (data, status, header) {
+                //success body
+                    $("#msg").text("执行结果: "+JSON.stringify(data));
+                }).fail(function (header, status, errorThrown) {
+                //fail body
+                    $("#msg").append(header.responseText) ;
+                })
+
+
+            var date2=new Date();//结束时间
+            var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+            $("#tmsg").text("耗时: "+date3+" ms");
+
+        });
+
+	
+		$("#userlogout").click(function(){
+				var date1=new Date();//开始时间
+                $("#msg").empty();
+                $.ajax({
+					"url": "./api/user/logout",
+					"method": "POST",
+					"cache": false,
+					"async":false,
+					data: {
+						"token": token
+					},
+                }).success(function (data, status, header) {
+                //success body
+                    $("#msg").text("执行结果: "+JSON.stringify(data));
+					token = ""
+					console.log("token: "+token)
+                }).fail(function (header, status, errorThrown) {
+                //fail body
+                    $("#msg").append(header.responseText) ;
+                })
+
+
+            var date2=new Date();//结束时间
+            var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+            $("#tmsg").text("耗时: "+date3+" ms");
+
+        });
+
+
+
+		$("#createFileTable").click(function(){
+				var date1=new Date();//开始时间
+                $("#msg").empty();
+                $.ajax({
+                    "url": "./api/file/CreateTable",
+                    "method": "POST",
+					headers: {
+						"token": token
+					},
+                    "cache": false,
+                    "async":false,
+                    "data":{
+                        "name":"varchar(200)",
+                        "filename":"varchar(1024)",
+                        "url":"varchar(1024)",
+						"lastModifiedDate":"datetime"
+                    }
+                }).success(function (data, status, header) {
+                //success body
+                    $("#msg").text("执行结果: "+JSON.stringify(data));
+                }).fail(function (header, status, errorThrown) {
+                //fail body
+                    $("#msg").append(header.responseText) ;
+                })
+
+
+            var date2=new Date();//结束时间
+            var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+            $("#tmsg").text("耗时: "+date3+" ms");
+
+        });
+
+
+        $("#dropFileTable").click(function(){
+            var date1=new Date();//开始时间
+                $("#msg").empty();
+                $.ajax({
+                    "url": "./api/file/DropTable",
+                    "method": "POST",
+					headers: {
+						"token": token
+					},
+                    "cache": false,
+                    "async":false,
+                    "data":{
+                        "force":true
+                    }
+                }).success(function (data, status, header) {
+                //success body
+                    $("#msg").text("执行结果: "+JSON.stringify(data));
+                }).fail(function (header, status, errorThrown) {
+                //fail body
+
+                    $("#msg").append(header.responseText) ;
+                })
+
+
+            var date2=new Date();//结束时间
+            var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+            $("#tmsg").text("耗时: "+date3+" ms");
+
+        });
+
+
+
+        $("#queryFileTable").click(function(){
+
+            var date1=new Date();//开始时间
+
+                $("#msg").empty();
+                $.ajax({
+                    "url": "./api/file",
+                    "method": "GET",
+					"headers": {
+						"token": token
+					},
+                    "cache": false,
+                    "async":false
+                }).success(function (data, status, header) {
+                //success body
+                    $("#msg").text("执行结果: "+JSON.stringify(data));
+                    ObjectId=data[0].id;
+
+                }).fail(function (header, status, errorThrown) {
+                //fail body
+
+                    $("#msg").append(header.responseText) ;
+                })
+
+            var date2=new Date();//结束时间
+            var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+            $("#tmsg").text("耗时: "+date3+" ms");
+
+
+        });
+
+
+
+
+	
+  		$("#createTable").click(function(){	
+  			var date1=new Date();//开始时间 
+  				$("#msg").empty();		
+				$.ajax({
+					"url": "./api/xxxtestxxx/CreateTable",
+					"method": "POST",
+					"headers": {
+						"token": token
+					},
+					"cache": false,
+					"async":false,
+					"data":{
+						"username":"varchar(30)",
+						"password":"varchar(30)",
+						"realname":"varchar(30)",
+						"mobile":"varchar(30)",
+					}
+				}).success(function (data, status, header) {
+				//success body	 
+					$("#msg").text("执行结果: "+JSON.stringify(data));
+				}).fail(function (header, status, errorThrown) {
+				//fail body
+					$("#msg").append(header.responseText) ; 
+				})
+				
+		
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+				
+  		});
+  		
+  		
+  		$("#tablefield").click(function(){
+  			var date1=new Date();//开始时间 	
+  				$("#msg").empty();		
+				$.ajax({
+					"url": "./api/xxxtestxxx/TableFields",
+					"method": "GET",
+					"headers": {
+						"token": token
+					},
+					"cache": false,
+					"async":false
+				}).success(function (data, status, header) {
+				//success body	 
+					$("#msg").text("执行结果: "+JSON.stringify(data));
+				}).fail(function (header, status, errorThrown) {
+				//fail body
+					
+					$("#msg").append(header.responseText) ; 
+				})
+				
+		
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+				
+  		});
+  		
+  		$("#countinfo").click(function(){	
+  			var date1=new Date();//开始时间 
+  			$("#msg").empty();			
+			$.ajax({
+				"url": "./api/xxxtestxxx/count",
+				"method": "GET",
+				"headers": {
+					"token": token
+				},
+				"cache": false,
+				"async":false
+			}).success(function (data, status, header) {
+			//success body
+				$("#msg").text("执行结果: "+JSON.stringify(data));
+				
+			}).fail(function (header, status, errorThrown) {
+			//fail body
+				//$("#msg").text("Error: "+JSON.stringify(header));
+				$("#msg").empty();
+				$("#msg").append(header.responseText);
+			});
+				
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+				
+				
+  		});	
+  		
+  		
+  		$("#addinfo").click(function(){	
+			var date1=new Date();//开始时间 
+  				$("#msg").empty();
+  				
+  					
+				$.ajax({
+					"url": "./api/xxxtestxxx",
+					"method": "POST",
+					"headers": {
+						"token": token
+					},
+					"cache": false,
+					"async":false,
+					"data":{
+						"username":"CS0001" ,
+						"password":"admin123",
+						"realname":"测试用户",
+						"mobile":"15011112222"
+					}
+				}).success(function (data, status, header) {
+				//success body	 
+					$("#msg").text("执行结果: "+JSON.stringify(data));
+					ObjectId=data.id;
+
+				}).fail(function (header, status, errorThrown) {
+				//fail body
+					
+					$("#msg").append(header.responseText) ; 
+				})
+				
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+			
+		
+  		});
+  		
+  		
+  		$("#queryinfo").click(function(){
+  		
+  			var date1=new Date();//开始时间 
+  				
+					var filter = {
+				    	fields:{"id": true,  "username": true, "realname": true, "mobile": true },
+				    	//"sql":"select * from user",
+				    	"order": "username",
+				    	"limit": 400,
+				    	"where": {
+					    		"realname": {"like": "测试"}
+					    		
+				    	}
+					}
+					
+  				$("#msg").empty();
+				$.ajax({
+					"url": "./api/xxxtestxxx?filter=" + encodeURIComponent(JSON.stringify(filter)),
+					"method": "GET",
+					"headers": {
+						"token": token
+					},
+					"cache": false,
+					"async":false
+				}).success(function (data, status, header) {
+				//success body	 
+					$("#msg").text("执行结果: "+JSON.stringify(data));
+					ObjectId=data[0].id;
+					
+				}).fail(function (header, status, errorThrown) {
+				//fail body
+					
+					$("#msg").append(header.responseText) ; 
+				})
+				
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+				
+		
+  		});
+  		
+  		
+  		$("#modifyinfo").click(function(){
+  			var date1=new Date();//开始时间 
+  				$("#msg").empty();		
+				$.ajax({
+					"url": "./api/xxxtestxxx/"+ObjectId,
+					"method": "POST",
+					"headers": {
+						"token": token
+					},
+					"cache": false,
+					"async":false,
+					"data":{
+						"mobile":"15088889999",
+						"_method":"PUT"
+					}
+				}).success(function (data, status, header) {
+				//success body	 
+					$("#msg").text("执行结果: "+JSON.stringify(data));
+				}).fail(function (header, status, errorThrown) {
+				//fail body
+					$("#msg").append(header.responseText) ; 
+				})
+				
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+				
+		
+  		});
+  		
+  		
+  		
+  		$("#delinfo").click(function(){	
+  			var date1=new Date();//开始时间 
+  				$("#msg").empty();		
+				$.ajax({
+					"url": "./api/xxxtestxxx/"+ObjectId,
+					"method": "POST",
+					"headers": {
+						"token": token
+					},
+					"cache": false,
+					"async":false,
+					"data":{
+						"_method":"DELETE"
+					}
+				}).success(function (data, status, header) {
+				//success body	 
+					$("#msg").text("执行结果: "+JSON.stringify(data));
+				}).fail(function (header, status, errorThrown) {
+				//fail body
+					
+					$("#msg").append(header.responseText) ; 
+				})
+				
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+				
+		
+  		});
+  		
+  		
+  		$("#dropTable").click(function(){	
+  			var date1=new Date();//开始时间 
+  				$("#msg").empty();		
+				$.ajax({
+					"url": "./api/xxxtestxxx/DropTable",
+					"method": "POST",
+					"headers": {
+						"token": token
+					},
+					"cache": false,
+					"async":false,
+					"data":{
+						"force":true
+					}
+				}).success(function (data, status, header) {
+				//success body	 
+					$("#msg").text("执行结果: "+JSON.stringify(data));
+				}).fail(function (header, status, errorThrown) {
+				//fail body
+					
+					$("#msg").append(header.responseText) ; 
+				})
+				
+		
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+				
+  		});
+  		
+  		
+  		$("#apitest").click(function(){	
+			var date1=new Date();//开始时间 
+  				$("#msg").empty();
+  				
+  					
+				$.ajax({
+					"url": "/deleteTarget",
+					"method": "POST",
+					"headers": {
+						"token": token
+					},
+					"cache": false,
+					"async":false,
+					// "data":JSON.stringify({
+                    //     "user": "user2",
+                    //     "passwd": "pwdsss2"
+                    // }),
+
+					// "data":{
+					// 	"param" : {
+					// 		"Id" : "8",
+					// 		"starttime": "2022-05-01 00:00:00",
+					// 		"endtime": "2022-05-02 00:00:00"
+					// 	},
+					// 	"limit": {
+					// 		"pagesize": 10,
+					// 		"pageno": 3
+					// 	}
+					// },
+
+					"data":JSON.stringify({
+						"param" : {
+							"Id" : "CkytT0f1FR2ZEWNmDrvmBUYv"
+						}
+					}),
+
+
+					// "data": {
+					// 	"param" :[{
+					// 		"username":"user1",
+					// 		"password":"pwdsss"
+					// 	},{
+					// 		"username":"user2",
+					// 		"password":"pwdsss2"
+					// 	}]
+					// },
+				}).success(function (data, status, header) {
+				//success body	 
+					$("#msg").text("执行结果: "+JSON.stringify(data));
+				}).fail(function (header, status, errorThrown) {
+				//fail body					
+					$("#msg").append(header.responseText) ; 
+				})
+				
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+			
+		
+  		});
+  		
+  		
+  	});
+  				
+	  	
+
+  </script>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    
+    <title>加密文件上传</title>
+     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<script type="text/javascript" src="./jquery.js"></script>
+	<!--
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	-->
+
+  </head>
+  
+  <body>
+	  	
+	<div>
+		<font color=red>
+		注意：<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;(1)、此通道只用于向自动化运维团队传输数据！<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;(2)、请确保文件名唯一性，相同文件名会覆盖！<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;(3)、网络传输慢，请耐心等待。<br>
+		---------------------------------------------------
+		</font>
+	</div>
+	<P>
+	<form id="uploadForm" enctype="multipart/form-data">　　<!-- 声明文件上传 -->
+	  <input id="file_upload" type="file" name="file_upload"/>　　<!-- 定义change事件,选择文件后触发 -->
+	  <p>
+	  <input id="btn1" type=reset value="重设" >&nbsp;&nbsp;&nbsp;&nbsp;
+	  <input id="uploadFile" type="button" name="uploadFile" value="上传文件 " >	
+	</form>
+	<p>
+    <p id="msg"></p><P> 
+	<p id="tmsg"></p><P> 
+	-------------------------------------------------------
+	<p id="cmsg"></p><P>
+  </body>
+  
+  <script type="text/javascript">
+	$(document).ready(function(){
+	
+		$("#msg").text("请先点击‘选择文件’，再执行‘上传文件’！");
+		$("#tmsg").text("");
+		
+	
+		var ObjectID = null ;
+	
+		var date1=new Date();//开始时间 
+		
+		var tf;		
+
+		getcount();
+  		
+  		$("#uploadFile").click(function(){
+  			if($("#file_upload").val() == "" ) {
+  				alert("请先选择文件！！！")
+  				return;
+  			}
+  			
+  			
+//  			if( (!$("#file_upload").val().endsWith('.pgp')) && (!$("#file_upload").val().endsWith('.gpg') )) {
+  //				alert("请上传pgp文件或gpg文件！！！")
+  //				return;
+  //			}
+  			
+				$("#msg").text("上传文件中，请稍等。。。");
+				$("#tmsg").text("");
+				date1=new Date();
+
+				$.ajax({
+					"url": "/mcm/api/fileUpload",
+					"method": "POST",
+					"cache": false,
+					"async":true,
+					data: new FormData($('#uploadForm')[0]),
+					processData: false,
+					contentType: false,
+				}).success(function (data, status, header) {
+				//success body	 
+					ObjectId=data.id;
+					//$("#msg").text("《"+data.name+"》上传成功 ! ");
+					$("#msg").text("上传成功: "+JSON.stringify(data));
+					getcount()
+					
+					clearInterval(tf);
+				}).fail(function (header, status, errorThrown) {
+				//fail body
+					clearInterval(tf);
+					$("#msg").append(header.responseText) ; 
+				})
+				
+				tf = setInterval(function(){ showTime(); },10);
+		
+			//var date2=new Date();//结束时间
+			//var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			//$("#tmsg").text("耗时: "+date3+" ms");
+			
+			
+  		});
+  		
+  		
+		function showTime() {
+			var date2=new Date();//结束时间
+			var date3=date2.getTime()-date1.getTime()  //时间差的毫秒数
+			$("#tmsg").text("耗时: "+date3+" ms");
+		}
+
+		function getcount() {
+			var filter = {
+				"limit":400,
+				"order":"lastModifiedDate desc"
+			}
+			$.ajax({
+					"url":"/mcm/api/file?filter="+encodeURIComponent(JSON.stringify(filter)) ,
+					"method":"GET",
+					"cache":false,
+					"async":true,
+			}).success(function (data,status,header) {
+				$("#cmsg").text("")
+				$("#cmsg").append("已上传数量："+data.length+"，列表如下：<p>")
+				for(i=0;i<data.length;i++) {
+					$("#cmsg").append(""+data[i].lastModifiedDate+" ---> "+data[i].name+"<br>" );
+				}
+			}).fail(function (header,status,errorThrown) {
+				$("#cmsg").append(header.responseText) ;
+			})
+		}
+  		
+  		
+  	});
+  				
+	  	
+
+  </script>
+</html>
